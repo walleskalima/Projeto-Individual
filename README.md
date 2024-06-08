@@ -1,5 +1,5 @@
 <h1 align="center">
-  Projeto Individualn - Love's Magic Shop
+  Projeto Individual - Love's Magic Shop
 </h1>
 
 ## 💻 Projeto
