@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <script src="./js/sessao.js"></script>
+    <link rel="stylesheet" href="./css/cadastro.css">
+</head>
+<body>
+
+    <div class="main-sign">
+            
+        <div class="left-sign">
+            <h2 class="text-one">Seja bem vindo(a)!</h2>
+            <img src="./assets/mobile-login-animate.svg" alt="" class="imagem">
+        </div>
+
+        <div class="right-sign">
+            <div class="card-sign">
+                <h1 class="text-two">Faça seu login</h1>
+                <p>Já possui uma conta? <a href="./login.html">Acesse sua conta agora!</a></p>
+                <div class="labels">
+                    <h3>Nome de usuário:</h3>
+                    <input type="text" class="campos" id="nomeUsuario" placeholder="Digite seu nome de usuário">
+                    <br>
+                    <!-- <h3>Nome completo:</h3>
+                    <input type="text" class="campos" id="nomeCompleto" placeholder="Digite seu nome completo">
+                    <br><br> -->
+                    <h3>Email:</h3>
+                    <input type="email" class="campos" id="email" placeholder="Digite seu email">
+                    <br>
+                    <h3>Senha:</h3>
+                    <input type="password" class="campos" id="senha" placeholder="*******">
+                    <br>
+                    <h3>Confirme a sua senha:</h3>
+                    <input type="password" class="campos" id="confirmacaoSenha" placeholder="********">
+                    <br>
+                    <h3>Qual o seu membro favorito:</h3>
+                    <select name="membros" id="membros">
+                        <option selected>Selecione um membro</option>
+                        <option value="1">Kim Namjoon</option>
+                        <option value="2">Kim Seokjin</option>
+                        <option value="3">Min Yoongi</option>
+                        <option value="4">Jung Hoseok</option>
+                        <option value="5">Park Jimin</option>
+                        <option value="6">Kim Taehyung</option>
+                        <option value="7">Jeon Jungkook</option>
+                    </select>
+                    <br>
+                    <button class="btn-sign" onclick="cadastrar()">Cadastrar</button>
+        
+                    <div id="mensagemErro"></div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+
+function cadastrar() {
+var usuarioVar = document.getElementById("nomeUsuario").value;
+// var nomeVar = document.getElementById("nomeCompleto").value;
+var emailVar = document.getElementById("email").value;
+var senhaVar = document.getElementById("senha").value;
+var confirmacaoSenhaVar = document.getElementById("confirmacaoSenha").value;
+var membroVar = document.getElementById("membros").value;
+
+let maiusculas = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
+let minusculas = [...'abcdefghijklmnopqrstuvwxyz'];
+let numeros = [...'0123456789'];
+let simbolos = [...'!@#$%&?'];
+
+function contemCaractere(senha, caracteres) {
+    for (let caractere of caracteres) {
+        if (senha.includes(caractere)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+let maiusculaValida = contemCaractere(senhaVar, maiusculas);
+let minusculaValida = contemCaractere(senhaVar, minusculas);
+let numeroValido = contemCaractere(senhaVar, numeros);
+let simboloValido = contemCaractere(senhaVar, simbolos);
+let tamanhoValido = senhaVar.length >= 8;
+
+if (
+    // nomeVar === "" ||
+    usuarioVar === "" ||
+    emailVar === "" ||
+    senhaVar === "" ||
+    confirmacaoSenhaVar === "" ||
+    membroVar === "Selecione um membro"
+) {
+    // cardErro.style.display = "block";
+    mensagemErro.innerHTML = `<p style="color:red;">Por favor, preencha todos os campos.</p>`;
+    return false;
+} 
+// else if (nomeVar.length <= 1) {
+//     mensagemErro.innerHTML = "O campo nome completo deve ter mais de um caractere.";
+// } 
+else if (usuarioVar.length <= 1) {
+    mensagemErro.innerHTML = `<p style="color:red;">O campo usuario deve ter mais de um caractere.</p>`;
+    return false;
+} 
+else if (emailVar.indexOf('@') == -1 || emailVar.indexOf('.com') == -1 || emailVar.indexOf('.com') < emailVar.indexOf('@')) {
+    mensagemErro.innerHTML = `<p style="color:red;">O campo email inserido é inválido, precisa de '@' e '.com'.</p>`;
+    return false;
+} 
+else if (senhaVar.length <= 7) {
+    mensagemErro.innerHTML = `<p style="color:red;">A senha inserida é muito pequena, ela deve ter mais de 7 caracteres.</p>`;
+    return false;
+}  
+
+    if (!(tamanhoValido && maiusculaValida && minusculaValida && numeroValido && simboloValido)) {
+        mensagemErro.innerHTML = `<p style="color:red;">Sua senha precisa ter pelo menos 8 caracteres, incluindo 1 caractere maiúsculo, 1 caractere minúsculo, 1 número e 1 símbolo.</p>`;
+        return false;
+    }
+
+if (confirmacaoSenhaVar !== senhaVar) {
+    mensagemErro.innerHTML = `<p style="color:red;">As senhas devem ser iguais.<p/>`;
+    return false;
+} 
+
+
+        fetch("/usuarios/cadastrar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                usuarioServer: usuarioVar,
+                // nomeServer: nomeVar,
+                emailServer: emailVar,
+                senhaServer: senhaVar,
+                membroServer: membroVar
+            }),
+        })
+        .then(function (resposta) {
+            if (resposta.ok) {
+                mensagemErro.innerHTML = `<p style="color:green;">Cadastro realizado com sucesso! Redirecionando para tela de Login...</p>`;
+    
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 2000);
+            } else {
+                alert("Houve um erro ao tentar realizar o cadastro!");
+            } 
+        })
+        .catch(function (erro) {
+            console.error(erro);
+        });
+
+    return false;
+}
+
+    </script>
+</body>
+</html>

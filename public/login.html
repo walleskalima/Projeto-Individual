@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="./css/login.css">
+    <script src="./js/sessao.js"></script>
+</head>
+<body>
+
+        <div class="main-login">
+            
+            <div class="left-login">
+                <h2 class="text-one">Que bom te ver de volta!</h2>
+                <img src="./assets/passionate-animate.svg" alt="" class="imagem">
+            </div>
+
+            <div class="right-login">
+                <div class="card-login">
+                    <h1 class="text-two">Faça seu login</h1>
+                    <p>Não possui uma conta? <a href="./cadastro.html">Crie agora!</a></p>
+                    <div class="labels">
+                <h3>E-mail:</h3>
+                <input type="text" id="email" class="campos" placeholder="seu e-mail">
+                <br><br>
+                <h3>Senha:</h3>
+                <input type="password" id="senha" class="campos" placeholder="**********">
+                <br><br>
+
+                <button class="btn-login" onclick="autenticar()">
+                    Entrar
+                </button>
+
+                <div id="mensagemErro"></div>
+            </div>
+        </div>
+        </div>
+        </div>
+
+
+
+</body>
+</html>
+
+
+<script>
+
+function autenticar() {
+
+    var emailVar = email.value;
+    var senhaVar = senha.value;
+
+
+        if (emailVar == "" || senhaVar == "") {
+            mensagemErro.innerHTML = `<p style="color:red;">Por favor, preencha todos os campos.</p>`;
+            return false;
+        }
+
+        console.log("FORM LOGIN: ", emailVar);
+        console.log("FORM SENHA: ", senhaVar);
+
+        fetch("/usuarios/autenticar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                emailServer: emailVar,
+                senhaServer: senhaVar
+            })
+        })
+        .then(function (resposta) {
+            console.log("ESTOU NO THEN DO entrar()!")
+
+            if (resposta.ok) {
+                mensagemErro.innerHTML = `<p style="color:white;">Login realizado com sucesso! Redirecionando para tela inicial...</p>`;
+
+                resposta.json().then(json => {
+                    console.log(json);
+                    console.log(JSON.stringify(json));
+
+                    sessionStorage.EMAIL_USUARIO = json.email;
+                    sessionStorage.NOME_USUARIO = json.nome;
+                    sessionStorage.ID_USUARIO = json.idUsuario;
+                    sessionStorage.MEMBRO_FAVORITO = json.fkMembro_fav;
+
+                    setTimeout(function () {
+                        // redirecionarParaPaginaPersonalizada(json.fkMembro_fav);
+                        window.location.href = "/dashboard/dashboard.html";
+                    }, 1000); // apenas para exibir o loading
+
+                });
+
+            } else {
+                alert("Houve um erro ao tentar realizar o login!");
+
+                resposta.text().then(texto => {
+                    console.error(texto);
+                });
+            }
+
+        }).catch(function (erro) {
+            console.log(erro);
+        })
+
+        return false;
+    }
+
+
+//     function redirecionarParaPaginaPersonalizada(membroFavorito) {
+//     var url;
+//     switch (membroFavorito) {
+//         case "1":
+//             url = "kim_namjoon.html";
+//             break;
+//         case "2":
+//             url = "kim_seokjin.html";
+//             break;
+//         case "3":
+//             url = "min_yoongi.html";
+//             break;
+//         case "4":
+//             url = "jung_hoseok.html";
+//             break;
+//         case "5":
+//             url = "park_jimin.html";
+//             break;
+//         case "6":
+//             url = "kim_taehyung.html";
+//             break;
+//         case "7":
+//             url = "jeon_jungkook.html";
+//             break;
+//         default:
+//             url = ".html";
+//             break;
+//     }
+//     window.location.href = url;
+// }
+
+</script>
