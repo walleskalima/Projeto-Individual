@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <div class="nav_bar">
+            <div class="logo">
+                <h1>BEM VINDO(A)!</h1>
+                <img src="../assets/puGkFHXozKsIRJOI-9vpc-transformed.png">
+            </div>
+            <div id="menu_bts" class="menu">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="muralBts.html">mural</a>
+                <a href="../index.html" class="sair">Sair</a>
+            </div>
+        </div>
+
+        <div class="dash">
+            <div class="kpis">
+                <div id="1" class="kpi_one">
+                    <p>Seu Membro Favorito</p>
+                    <span id="span_membro_favorito"></span>
+                </div>
+                <div id="2" class="kpi_two">
+                    <p>Sua Música Favorita</p>
+                    <span id="span_popular"></span>
+                    <u id="u_membro_favorito"></u>
+                </div>
+            </div>
+            <div class="graficos">
+                <div class="rank">
+                    <h2>Top 7 dos Membros favoritos dos usuarios</h2>
+                    <section class="grafico_rank">
+                        <canvas class="graficofav" id="grafico_favoritos" width="740" height="460"></canvas>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const membros = [
+            "Kim Namjoon", "Kim Seokjin", "Min Yoongi", "Jung Hoseok", "Park Jimin", "Kim Taehyung", "Jeon Jungkook"];
+
+function buscarDadosUsuario() {
+    const idUsuario = sessionStorage.ID_USUARIO;
+
+    if (!idUsuario) {
+        console.error('ID de usuário não definido');
+        return;
+    }
+
+    //dados dos membros
+    fetch(`/membros_bts/buscarMembrosPorUsuario/${idUsuario}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+
+    .then(function (resposta) {
+        if (resposta.ok) {
+            return resposta.json();
+        } else {
+            throw new Error("Houve um erro ao tentar trazer o resultado");
+        }
+    })
+
+    .then(data => {
+        if (data.length === 0) {
+            console.warn("Nenhum resultado encontrado");
+            return;
+        }
+
+        atualizarKPI(data);
+        atualizarGraficoFavoritos(data);
+    })
+    .catch(function (erro) {
+        console.error(`#ERRO: ${erro}`);
+    });
+}
+
+function atualizarKPI(dadosFav) {
+    const membroFavorito = dadosFav[0]?.nome || "N/A"; 
+    document.getElementById('span_membro_favorito').innerHTML = membroFavorito;
+}
+
+function capturarEscolhasDosUsuarios() {
+    const membrosEscolhidos = [];
+    atualizarGraficoComMembrosEscolhidos(membrosEscolhidos);
+}
+
+function atualizarGraficoComMembrosEscolhidos(membrosEscolhidos) {
+   
+    fetch("membros_bts/buscarVotosMembros", {
+        method: "GET", 
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ membrosEscolhidos: membrosEscolhidos }) 
+    })
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error('Erro ao buscar os votos dos membros');
+        }
+        return response.json();
+    })
+    .then(function (data) {
+
+        atualizarGraficoComDados(data);
+    })
+    .catch(function (error) {
+        console.error('Erro ao buscar os votos dos membros:', error);
+    });
+}
+
+function atualizarGraficoFavoritos(dados) {
+    console.log('Atualizando gráfico com dados:', dados);
+
+    const labels = ["Kim Namjoon", "Kim Seokjin", "Min Yoongi", "Jung Hoseok", "Park Jimin", "Kim Taehyung", "Jeon Jungkook"];
+    const votos = [
+        dados[0].KimNamjoon,
+        dados[0].KimSeokjin,
+        dados[0].MinYoogin,
+        dados[0].JungHoseok,
+        dados[0].ParkJimin,
+        dados[0].KimTaehyung,
+        dados[0].JeonJungkook
+    ];
+
+    console.log('Valores dos votos:', votos);
+
+    const ctx = document.getElementById('grafico_favoritos').getContext('2d');
+
+    console.log('Contexto do gráfico:', ctx);
+
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votos',
+                data: votos,
+                borderWidth: 1,
+                color: "#fff"
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top 7 Membros Favoritos',
+                    color: '#333',
+                font: {
+                    size: 18,
+                    weight: 'bold'
+                }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                    color: '#333',
+                    font: {
+                        size: 14,
+                        weight: 'bold' 
+                    }
+                }
+                },
+                x: {
+                ticks: {
+                    color: '#333',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                }
+            }
+            }
+        }
+    });
+}
+
+function buscarDadosFavoritos() {
+    fetch("/membros_bts/verFavorito", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+    .then(function (resposta) {
+        if (resposta.ok) {
+            return resposta.json();
+        } else {
+            throw new Error("Houve um erro ao tentar trazer o resultado");
+        }
+    })
+    .then(function (data) {
+        console.log("Dados recebidos para o gráfico:", data);
+        if (data.length === 0) {
+            console.warn("Nenhum resultado encontrado");
+            return;
+        }
+        atualizarGraficoFavoritos(data);
+    })
+    .catch(function (erro) {
+        console.error(`#ERRO: ${erro}`);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    buscarDadosUsuario();
+    buscarDadosFavoritos();
+    setInterval(buscarDadosUsuario, 5000);
+    setInterval(buscarDadosFavoritos, 5000);
+});
+
+    </script>
+</body>
+</html>

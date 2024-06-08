@@ -1,0 +1,140 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --text: #FFFFFF;
+    --purple: #8048D8;
+    --darkblackpurple: #3F2773;
+    --darkpurple: rgb(63, 2, 107);
+    --lightpurple: #DED2FF;
+    --pink: #F085F2;
+    --blue: #6bcbf1;
+    --yellow: #F2EDA2;
+}
+
+body{
+    margin: 0;
+}
+
+.main-login{
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--darkpurple);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-login{
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-login > h1 {
+    font-size: 3vh;
+    color: var(--text);
+}
+
+img {
+    width: 500px;
+    height: 500px;
+    margin-bottom: -150px;
+}
+
+.left-login > h2 {
+    color: var(--text);
+    margin-top: -400px;
+    margin-left: 150px;
+    font-size: 3.5vh;
+    justify-content: center;
+    text-align: center;
+}
+
+.card-login > p {
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.right-login{
+    width: 50vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-login{
+    width: 80%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px 35px;
+    background-color: var(--darkpurple);
+    border-radius: 20px;
+    box-shadow: 0px -10px 40px #0c0619;
+}
+
+.card-login > h1 {
+    color: var(--text);
+    font-weight: 800;
+    margin: 0;
+}
+
+.labels {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 10px 0px;
+}
+
+
+.labels > input {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    background: var(--lightpurple);
+    color: var(--text);
+    font-size: 12pt;
+    box-shadow: 0px 10px 40px #0c0619;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.labels > h3 {
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.labels > input::placeholder {
+    color: #cdc5e1;
+}
+
+.btn-login{
+    width: 100%;
+    padding: 16px 0px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text);
+    background: var(--purple);
+    cursor: pointer;
+    box-shadow: 0px 10px 40px -12px var(--lightpurple);
+}
